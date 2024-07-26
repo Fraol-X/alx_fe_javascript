@@ -16,11 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function fetchQuotesFromServer() {
         try {
-            // Fetch data from the mock API
             const response = await fetch('https://jsonplaceholder.typicode.com/posts');
             const data = await response.json();
             console.log('Fetched data from server:', data);
-            // In a real-world application, you would process this data and update quotes
         } catch (error) {
             console.error('Failed to fetch data from server:', error);
         }
@@ -28,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function postQuoteToServer(quote) {
         try {
-            // Post data to the mock API
             const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
                 method: 'POST',
                 headers: {
@@ -43,9 +40,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const result = await response.json();
             console.log('Posted quote to server:', result);
-            // In a real-world application, you might want to handle the result or update the UI
         } catch (error) {
             console.error('Failed to post quote to server:', error);
+        }
+    }
+
+    async function syncQuotes() {
+        try {
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+            const serverQuotes = await response.json();
+            if (Array.isArray(serverQuotes)) {
+                localStorage.setItem('quotes', JSON.stringify(serverQuotes));
+                quotes.length = 0; 
+                quotes.push(...serverQuotes);
+                updateCategoryFilter();
+                alert('Quotes synced with server successfully!');
+            } else {
+                console.error('Unexpected server response:', serverQuotes);
+            }
+        } catch (error) {
+            console.error('Failed to sync quotes with server:', error);
+            alert('Failed to sync quotes with server.');
         }
     }
 
@@ -85,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('newQuoteCategory').value = "";
         alert("Successfully added");
 
-        // Post the new quote to the server
         postQuoteToServer(newQuote);
     }
 
@@ -168,5 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
         categoryFilter.value = savedCategory;
     }
     showRandomQuote();
-    fetchQuotesFromServer();
+
+    setInterval(syncQuotes, 60000);
 });

@@ -17,6 +17,18 @@ document.addEventListener('DOMContentLoaded', function(){
     const newQuoteCategoryInput = document.getElementById('newQuoteCategory');
     const addQuoteButton = document.getElementById('addQuoteButton');
 
+    function createAddQuoteForm(){
+        const htmlForm = `
+            <div id="addQuoteForm">
+                <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+                <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+                <button id="addQuoteButton">Add Quote</button>
+            </div>`;
+
+        document.body.insertAdjacentHTML('beforeend', htmlForm);
+
+    }
+
     function showRandomQuote() {
 
         const randomDisplay = Math.floor(Math.random() * quotes.length);
@@ -31,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
         if (text === "" || category === "") {
-            alert("Quote and Category Inputs Required")
+            alert("Quote and Category Inputs are Required!")
             return;
         }
 

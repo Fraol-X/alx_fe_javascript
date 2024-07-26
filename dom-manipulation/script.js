@@ -62,11 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 quotes.push(...serverQuotes);
                 updateCategoryFilter();
                 showNotification('Quotes synced with server successfully!', 'success');
+                alert('Quotes synced with server successfully!');
             } else {
                 showNotification('Unexpected server response.', 'error');
+                alert('Unexpected server response.');
             }
         } catch (error) {
             showNotification('Failed to sync quotes with server.', 'error');
+            alert('Failed to sync quotes with server.');
         }
     }
 
@@ -95,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (text === "" || category === "") {
             showNotification("Input required for Quote and Category", 'error');
+            alert("Input required for Quote and Category");
             return;
         }
 
@@ -105,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('newQuoteText').value = "";
         document.getElementById('newQuoteCategory').value = "";
         showNotification("Quote successfully added", 'success');
+        alert("Quote successfully added");
 
         postQuoteToServer(newQuote);
     }
@@ -169,8 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 saveQuotes();
                 updateCategoryFilter();
                 showNotification('Quotes imported successfully!', 'success');
+                alert('Quotes imported successfully!');
             } catch (error) {
                 showNotification('Failed to import quotes. Please ensure the file is valid JSON.', 'error');
+                alert('Failed to import quotes. Please ensure the file is valid JSON.');
             }
         };
         fileReader.readAsText(event.target.files[0]);

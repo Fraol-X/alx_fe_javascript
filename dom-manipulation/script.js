@@ -13,14 +13,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const exportQuotesButton = document.getElementById('exportQuotes');
     const formContainer = document.getElementById('formContainer');
     const importFileInput = document.getElementById('importFile');
+    const notificationArea = document.getElementById('notificationArea');
+
+    function showNotification(message, type = 'info') {
+        if (!notificationArea) return;
+        notificationArea.innerHTML = `<div class="${type}">${message}</div>`;
+        setTimeout(() => {
+            notificationArea.innerHTML = '';
+        }, 5000);
+    }
 
     async function fetchQuotesFromServer() {
         try {
             const response = await fetch('https://jsonplaceholder.typicode.com/posts');
             const data = await response.json();
-            console.log('Fetched data from server:', data);
         } catch (error) {
-            console.error('Failed to fetch data from server:', error);
+            showNotification('Failed to fetch data from server.', 'error');
         }
     }
 
@@ -39,9 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const result = await response.json();
-            console.log('Posted quote to server:', result);
         } catch (error) {
-            console.error('Failed to post quote to server:', error);
+            showNotification('Failed to post quote to server.', 'error');
         }
     }
 
@@ -51,16 +58,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const serverQuotes = await response.json();
             if (Array.isArray(serverQuotes)) {
                 localStorage.setItem('quotes', JSON.stringify(serverQuotes));
-                quotes.length = 0; 
+                quotes.length = 0;
                 quotes.push(...serverQuotes);
                 updateCategoryFilter();
-                alert('Quotes synced with server successfully!');
+                showNotification('Quotes synced with server successfully!', 'success');
             } else {
-                console.error('Unexpected server response:', serverQuotes);
+                showNotification('Unexpected server response.', 'error');
             }
         } catch (error) {
-            console.error('Failed to sync quotes with server:', error);
-            alert('Failed to sync quotes with server.');
+            showNotification('Failed to sync quotes with server.', 'error');
         }
     }
 
@@ -88,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const category = document.getElementById('newQuoteCategory').value.trim();
 
         if (text === "" || category === "") {
-            alert("Input required for Quote and Category");
+            showNotification("Input required for Quote and Category", 'error');
             return;
         }
 
@@ -98,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCategoryFilter();
         document.getElementById('newQuoteText').value = "";
         document.getElementById('newQuoteCategory').value = "";
-        alert("Successfully added");
+        showNotification("Quote successfully added", 'success');
 
         postQuoteToServer(newQuote);
     }
@@ -162,9 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 quotes.push(...importedQuotes);
                 saveQuotes();
                 updateCategoryFilter();
-                alert('Quotes imported successfully!');
+                showNotification('Quotes imported successfully!', 'success');
             } catch (error) {
-                alert('Failed to import quotes. Please ensure the file is valid JSON.');
+                showNotification('Failed to import quotes. Please ensure the file is valid JSON.', 'error');
             }
         };
         fileReader.readAsText(event.target.files[0]);

@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const formContainer = document.getElementById('formContainer');
     const importFileInput = document.getElementById('importFile');
 
+    async function fetchQuotesFromServer() {
+        try {
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+            const data = await response.json();
+            console.log('Fetched data from server:', data);
+        } catch (error) {
+            console.error('Failed to fetch data from server:', error);
+        }
+    }
+
     function saveQuotes() {
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
@@ -117,35 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
         fileReader.readAsText(event.target.files[0]);
     }
 
-    function fetchQuotesFromServer() {
-        // Simulate fetching data from a server
-        setTimeout(() => {
-            console.log('Fetching quotes from server...');
-            // Here you would make an actual request to fetch quotes from a server
-            // For demonstration, we'll just log a message
-        }, 1000);
-    }
-
-    function populateCategories() {
-        if (!categoryFilter) return;
-
-        const categories = [...new Set(quotes.map(quote => quote.category))];
-        categoryFilter.innerHTML = '<option value="all">All Categories</option>';
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categoryFilter.appendChild(option);
-        });
-    }
-
     if (newQuoteButton) newQuoteButton.addEventListener('click', showRandomQuote);
     if (categoryFilter) categoryFilter.addEventListener('change', filterQuotes);
     if (exportQuotesButton) exportQuotesButton.addEventListener('click', exportToJsonFile);
     if (importFileInput) importFileInput.addEventListener('change', importFromJsonFile);
 
     createAddQuoteForm();
-    populateCategories();
+    updateCategoryFilter();
     const savedCategory = localStorage.getItem('selectedCategory');
     if (savedCategory && categoryFilter) {
         categoryFilter.value = savedCategory;

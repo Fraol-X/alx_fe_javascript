@@ -20,6 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
+    function saveSelectedCategory(category) {
+        localStorage.setItem('selectedCategory', category);
+    }
+
+    function getSelectedCategory() {
+        return localStorage.getItem('selectedCategory') || 'all';
+    }
+
     function saveLastViewedQuote(index) {
         sessionStorage.setItem('lastViewedQuoteIndex', index);
     }
@@ -105,10 +113,14 @@ document.addEventListener('DOMContentLoaded', function() {
             option.textContent = category;
             categoryFilter.appendChild(option);
         });
+        
+        categoryFilter.value = getSelectedCategory();
+        filterQuotes();
     }
 
     function filterQuotes() {
         const selectedCategory = categoryFilter.value;
+        saveSelectedCategory(selectedCategory);
         let filteredQuotes = quotes;
 
         if (selectedCategory !== 'all') {
@@ -149,19 +161,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error parsing JSON file.');
             }
         };
-
         fileReader.readAsText(event.target.files[0]);
     }
 
     if (exportButton) {
         exportButton.addEventListener('click', exportToJsonFile);
     }
-
     categoryFilter.addEventListener('change', filterQuotes);
-
     createAddQuoteForm();
     newQuoteButton.addEventListener('click', showRandomQuote);
     showLastViewedQuote();
     updateCategoryFilter();
-
 });

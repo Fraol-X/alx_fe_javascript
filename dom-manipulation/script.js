@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const apiUrl = 'https://jsonplaceholder.typicode.com/posts';
     const storedQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
     const quotes = storedQuotes.length > 0 ? storedQuotes : [
         {text: "If you can dream it, you can do it.", category: "Motivational"},
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             option.textContent = category;
             categoryFilter.appendChild(option);
         });
-        
+
         categoryFilter.value = getSelectedCategory();
         filterQuotes();
     }
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredQuotes = quotes.filter(quote => quote.category === selectedCategory);
         }
 
-        quoteDisplay.innerHTML = filteredQuotes.map(quote => 
+        quoteDisplay.innerHTML = filteredQuotes.map(quote =>
             `<p>Quote: ${quote.text}</p><p>Category: ${quote.category}</p>`
         ).join('');
     }
@@ -164,6 +165,43 @@ document.addEventListener('DOMContentLoaded', function() {
         fileReader.readAsText(event.target.files[0]);
     }
 
+    function notifyUser(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 5000);
+    }
+
+    async function syncData() {
+        const serverQuotes = await fetchQuotesFromServer();
+        if (serverQuotes) {
+            const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            localStorage.setItem('quotes', JSON.stringify(serverQuotes));
+            quotes.length = 0;
+            quotes.push(...serverQuotes);
+            populateCategories();
+            filterQuotes();
+            notifyUser('Data updated from server.');
+        }
+    }
+
+    async function fetchQuotesFromServer() {
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            return data.map(item => ({ text: item.title, category: 'General' }));
+        } catch (error) {
+            console.error('Error fetching quotes from server:', error);
+        }
+    }
+
+    function startPeriodicFetch() {
+        setInterval(syncData, 60000);
+    }
+
     if (exportButton) {
         exportButton.addEventListener('click', exportToJsonFile);
     }
@@ -172,4 +210,5 @@ document.addEventListener('DOMContentLoaded', function() {
     newQuoteButton.addEventListener('click', showRandomQuote);
     showLastViewedQuote();
     populateCategories();
+    startPeriodicFetch();
 });

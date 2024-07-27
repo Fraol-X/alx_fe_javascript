@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 populateCategories();
                 filterQuotes();
-                notifyUser('Data synchronized with server.');
+                notifyUser('Quotes synced with server!');
             }
         } catch (error) {
             console.error('Error syncing quotes:', error);
